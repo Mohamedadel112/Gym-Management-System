@@ -1,0 +1,5 @@
+{
+  "name": "IronCore Gym Management",
+  "description": "A comprehensive full-stack gym management system with admin dashboards, membership tracking, and Stripe payments.",
+  "requestFramePermissions": []
+}

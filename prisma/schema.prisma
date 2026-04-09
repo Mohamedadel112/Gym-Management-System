@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String?
+  name          String?
+  role          String    @default("MEMBER") // ADMIN, TRAINER, MEMBER
+  googleId      String?   @unique
+  avatar        String?
+  phone         String?
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  membership    Membership?
+  bookings      Booking[]
+  payments      Payment[]
+}
+
+model Membership {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  type        String    // BASIC, PREMIUM, VIP
+  status      String    @default("ACTIVE") // ACTIVE, EXPIRED, CANCELLED
+  startDate   DateTime  @default(now())
+  endDate     DateTime
+  price       Float
+}
+
+model Class {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  trainerName String
+  startTime   DateTime
+  endTime     DateTime
+  capacity    Int
+  bookings    Booking[]
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Float
+  currency      String   @default("USD")
+  status        String   // SUCCESS, PENDING, FAILED
+  stripeId      String?  @unique
+  description   String?
+  createdAt     DateTime @default(now())
+}
